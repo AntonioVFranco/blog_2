@@ -50,13 +50,16 @@ jobs:
             --baseURL "https://ai.antoniovfranco.com/"
           echo "=== Public directory contents ==="
           ls -la ./public
+          echo "=== Root level files ==="
+          ls -la ./public/ | head -30
           echo "=== Index files ==="
-          find ./public -name "index.html"
+          find ./public -maxdepth 1 -name "index.html"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./public
+          retention-days: 1
 
   deploy:
     environment:

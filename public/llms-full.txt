@@ -1,0 +1,89 @@
+# Antonio V. Franco — AI Engineering Blog (Full Articles)
+
+Full text of all articles for deep context. Source: https://antoniovfranco.com
+
+---
+
+## Stable-RAG Benchmark: Your RAG System Lies Depending on Document Order.
+URL: https://antoniovfranco.com/posts/2026/stable-rag-benchmark/
+Published: 2026-04-27
+
+You built a solid RAG pipeline. Semantic retrieval with embeddings, lexical search via BM25, cross-encoder reranking, everything dialed in. The right documents reach the model. The answer comes out. You trust it. But what if I told you that simply shuffling the order of the documents in the context (without removing or adding a single one) makes the model give a completely different answer? And worse: a wrong answer.
+
+That is exactly what the paper "Stable-RAG: Mitigating Retrieval-Permutation-Induced Hallucinations in Retrieval-Augmented Generation" (Zhang et al., 2026) proved systematically. And it is what I decided to test in practice, building my own benchmark to compare conventional RAG (even in its most advanced form, with hybrid search and reranking) against Stable-RAG. The numbers are too clear to ignore.
+
+The problem has a name: Permutation Sensitivity Rate, or PSR. It measures the proportion of document order permutations that cause the model to hallucinate. With the correct document fixed in the first position and an LLaMA3-8B model, the PSR on the NaturalQuestions dataset reaches 28%. That means in almost one third of the cases, just rearranging the other documents makes the model ignore the correct evidence and invent something. With the correct document in the fifth position, the PSR climbs to 51%. Smaller models are even more sensitive: Qwen3-1.7B hits a PSR of 65.9% even with the correct document in first position.
+
+These numbers are not a technical detail. They are a structural problem. Every conventional RAG pipeline (hybrid search, reranking, MMR) implicitly assumes that once the right documents reach the model, their order is irrelevant or can be fixed by a reranker. But the reranker sorts by relevance to the query, not by stability for the model. The "most relevant" order is not necessarily the "safest" order for the generator.
+
+Stable-RAG attacks this problem head-on. The approach has three stages. In the first, for each question, the model is run under multiple permutations of the retrieved documents. The hidden states from the last layer (before generation) are extracted and grouped via spectral clustering. This reveals the model's "reasoning modes": distinct clusters of hidden states correspond to distinct answers. In the second stage, the clustering results are sorted into four types. Fully correct instances are discarded. Partially correct instances generate preference pairs where the most frequent correct answer is preferred over the most frequent wrong answer. Fully wrong instances with no answer in the documents encourage abstention ("I don't know"). Fully wrong instances with an answer available promote the correct answer over abstention. In the third stage, these pairs feed a Direct Preference Optimization (DPO) training run using LoRA.
+
+The Benchmark: To test whether Stable-RAG really delivers, I built a controlled benchmark. Same model (Qwen3-4B), same dataset (NaturalQuestions), same retriever (sentence-transformers with hybrid search). The only difference is the generation method. On one side, conventional RAG with hybrid search (semantic search plus BM25) and cross-encoder reranking. On the other, Stable-RAG with hidden state clustering, preference data construction, and DPO alignment.
+
+Results: Stable-RAG beats conventional RAG on every metric. SubEM rises from 40.75% to 48.14% (a gain of 18.1%). F1 goes from 42.82% to 45.80% (+7.0%). PSR drops from 45.0% to 28.0%, a reduction of 37.8%. And consistency jumps from 55% to 75%, an improvement of 36.4%. When the correct document is in position 5, conventional RAG gets 30% right while Stable-RAG gets 44% right — a 14 percentage point gap.
+
+Stable-RAG also introduces an abstention rate of 22%. That means in nearly a quarter of the cases where there is no evidence in the documents, the model answers "I don't know" instead of inventing something.
+
+The paper is available on arXiv (2601.02993v4) and the code on GitHub (github.com/zqc1023/Stable-RAG).
+
+---
+
+## RAG with Open-Source LLMs: Why You're Paying Too Much to Hand Your Data to Someone Else
+URL: https://antoniovfranco.com/posts/2026/rag-open-source-llms/
+Published: 2026-04-26
+
+Every time someone asks me whether it's worth using GPT-5.5 or Opus 4.7 in a RAG pipeline, I ask them the same question back: would you trust your most sensitive documents to a foreign company that's subject to the CLOUD Act? The answer, almost always, is an uncomfortable silence. Commercial models are good. Really good. But RAG is, by definition, an operation that involves sensitive data (internal documents, contracts, customer histories, regulatory information) flowing through infrastructure you don't control.
+
+Cost analysis: If you process 500,000 queries per month with an average of 4,000 input tokens and 1,500 output tokens per query, using Claude Sonnet 4.6 at $3 per million input tokens and $15 per million output tokens, you're looking at roughly $16,500 a month just for inference. Switch to Opus 4.7, and it jumps to $27,500 monthly. A server with two NVIDIA A100 80GBs on RunPod runs Qwen3.5-35B-A3B for $2,160 to $3,600 a month. In six months, your own setup has paid for itself. In twelve, you're saving over $100,000 a year.
+
+The right models for RAG: Qwen3.5-35B-A3B (397B total, 3B active, Apache 2.0, 262k context) scores 76.5 on IFBench — better than GPT-5.5 (75.4). The think/no-think toggle lets you run simple queries in no-think mode (fast, cheap) and complex reasoning queries in think mode. Qwen3-8B (8B dense, 8.8M downloads, Apache 2.0) offers consistent latency. DeepSeek V4 Flash (284B total, 13B active, 1M context, MIT) delivers 88.1 on GPQA Diamond with Hybrid Attention cutting FLOPs on 1M-token contexts to 27%.
+
+Fine-tuning: With open-source models, you can fine-tune on your domain data using LlamaFactory with LoRA, QLoRA, and full fine-tuning. You can customize embedding models (Qwen3-Embedding-0.6B, BGE-m3), reranking models (Qwen3-Reranker-0.6B, Qwen3-Reranker-4B), and optimize the entire pipeline with DSPy.
+
+Architecture: The open-source RAG stack includes LlamaParse and Apache Tika for parsing, semantic and document-aware chunking, Qwen3-Embedding-0.6B for embeddings, Milvus/Qdrant/Chroma for vector storage, hybrid search (semantic + BM25), Qwen3-Reranker-4B for reranking, Microsoft's GraphRAG for knowledge graphs, and LangChain/LlamaIndex/Haystack/R2R/LangGraph/DSPy for orchestration.
+
+The choice is between control and dependency. Between data sovereignty and contractual promises. Between infrastructure you own and an API that can change prices, terms of use, and availability at any time.
+
+---
+
+## Spectral Classification Stability Engine: From Idea to Results
+URL: https://antoniovfranco.com/posts/2026/spectral-classification-stability-engine/
+Published: 2026-04-29
+
+The Stable-RAG method uses spectral clustering on the hidden states of language models to identify distinct reasoning modes. Astronomy studies spectral features of celestial objects. Two meanings of the same word, "spectral." The question: could spectral clustering from Stable-RAG diagnose instability in astronomical spectral classification?
+
+SCSE Architecture: Part 1 (Detection and Quantification) loads SDSS data, generates permutations of spectral features, runs inference with the LLM, extracts hidden states, performs spectral clustering, and calculates the Permutation Sensitivity Score (PSS). Part 2 (Alignment and Evaluation) builds preference data, trains the model using DPO, and evaluates results before and after alignment.
+
+Model: Qwen3.5-9B in float16 without quantization on a RunPod A40 (48GB VRAM) for inference and A100-SXM4-80GB for DPO training. Disabled reasoning mode with enable_thinking=False.
+
+Dataset: SDSS17 Stellar Classification dataset with 150 objects (50 STAR, 50 GALAXY, 50 QSO), 10 features each, 30 permutations per object = 4,500 inference calls.
+
+Infrastructure saga: 7 failed iterations on Kaggle T4 (CUDA incompatibility with Qwen models), then 4 iterations on RunPod A40 (OOM during DPO), finally successful on RunPod A100 with 80GB VRAM.
+
+Part 1 Results: Average PSS of 0.0916 for 150 objects. 46% completely stable (PSS=0), 54% affected by permutation. Quasars most stable (avg PSS 0.0073), stars most unstable (avg PSS 0.1853). All objects showed exactly K=2 clusters (binary reasoning modes).
+
+Part 2 Results: PSS reduced from 0.139 to 0.073 (47% reduction) after DPO training with LoRA (r=8, targeting q_proj and v_proj). Accuracy preserved. Two-phase DPO training separated reference log-probability computation from LoRA training to manage VRAM.
+
+Total compute cost: under $2.00.
+
+---
+
+## Can Memory Make an AI Worse? My Benchmark with Qwen3.5-9B and Stellar Classification
+URL: https://antoniovfranco.com/posts/2026/memory-benchmark-qwen-stellar/
+Published: 2026-05-03
+
+I ran 135 celestial object classification tasks using three memory approaches. The result was counterintuitive: naive memory reduced accuracy by 22 percentage points.
+
+Three conditions: Baseline (no memory, model reasons from pre-trained knowledge), Traditional ReasoningBank (flat embedding space, k=1 retrieval, monotonic growth), and RB-EC (ReasoningBank with Enhanced Curation).
+
+RB-EC innovations: EIM (Embedding Improvement Mechanism with multi-field embeddings), RATT (Retrieval-Adaptive Task Typing with dynamic k), CES (Consolidation via Embedding Similarity after every 20 episodes), DCC (Dual-Condition Cards bundling co-occurring strategies), and PST (Pruning by Significance and Trajectory with per-class floors).
+
+Additional safeguards: Class-balanced retrieval, debiasing tracker, confidence-aware fallback, ambiguous task detector, consolidation guardrails.
+
+Setup: Qwen3.5-9B with 8-bit quantization on RunPod A40 (48GB VRAM), $0.44/hour, 125 minutes total, ~$0.92 compute cost.
+
+Results: Baseline 80.0% (36/45 correct). Traditional ReasoningBank 57.8% (26/45) — a 22 percentage point drop. RB-EC 80.0% (36/45) — matching baseline with 19% smaller memory bank.
+
+Class breakdown: Quasars were 15/15 in baseline and RB-EC, but traditional memory misclassified nearly half due to QSO bias. Galaxies were hardest: 53.3% baseline, 26.7% traditional, 53.3% RB-EC. Stars: 93.3% traditional (but at expense of other classes).
+
+Key lesson: Uncurated memory is worse than no memory. Memory systems must be actively managed with consolidation, pruning, and debiasing.
