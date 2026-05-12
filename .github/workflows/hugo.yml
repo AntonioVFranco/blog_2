@@ -48,6 +48,10 @@ jobs:
           hugo \
             --minify \
             --baseURL "https://ai.antoniovfranco.com/"
+          echo "=== Public directory contents ==="
+          ls -la ./public
+          echo "=== Index files ==="
+          find ./public -name "index.html"
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
