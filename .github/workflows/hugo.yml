@@ -6,7 +6,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
+  pages: write
+  id-token: write
 
 concurrency:
   group: "pages"
@@ -21,11 +23,12 @@ jobs:
     runs-on: ubuntu-latest
     env:
       HUGO_VERSION: 0.147.2
+      HUGO_CACHEDIR: /tmp/hugo_cache
     steps:
       - name: Install Hugo CLI
         run: |
-          wget -O ${{ runner.temp }}/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
-          && sudo dpkg -i ${{ runner.temp }}/hugo.deb
+          wget -O /tmp/hugo.deb https://github.com/gohugoio/hugo/releases/download/v${HUGO_VERSION}/hugo_extended_${HUGO_VERSION}_linux-amd64.deb \
+          && sudo dpkg -i /tmp/hugo.deb
 
       - name: Checkout
         uses: actions/checkout@v4
@@ -33,23 +36,39 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Clean public directory
-        run: |
-          rm -rf ./public ./resources ./.hugo_build_lock
+      - name: Setup Pages
+        id: pages
+        uses: actions/configure-pages@v5
 
-      - name: Build with Hugo
-        env:
-          HUGO_CACHEDIR: ${{ runner.temp }}/hugo_cache
-          HUGO_ENVIRONMENT: production
+      - name: Create clean build directory
         run: |
-          hugo --minify --baseURL "https://ai.antoniovfranco.com/"
+          mkdir -p /tmp/build
+          cd /tmp/build
+          echo "Created clean build dir at /tmp/build"
+          ls -la /tmp/build
+
+      - name: Build with Hugo to clean dir
+        run: |
+          hugo --minify --baseURL "https://ai.antoniovfranco.com/" --destination /tmp/build
           echo "Build complete."
-          ls -la ./public
+          ls -la /tmp/build
+          echo "=== Root files ==="
+          ls /tmp/build/ | head -20
+
+      - name: Verify build
+        run: |
+          if [ -f /tmp/build/index.html ]; then
+            echo "SUCCESS: index.html exists"
+          else
+            echo "ERROR: index.html not found!"
+            exit 1
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: /tmp/build
 
       - name: Deploy to GitHub Pages
-        uses: JamesIves/github-pages-deploy-action@v4
-        with:
-          branch: gh-pages
-          folder: ./public
-          clean: true
-          cname: ai.antoniovfranco.com
+        id: deployment
+        uses: actions/deploy-pages@v4
