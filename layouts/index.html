@@ -1,0 +1,32 @@
+{{- define "main" }}
+{{- $pages := where .Site.RegularPages "Section" "posts" }}
+{{- $byYear := $pages.GroupByDate "2006" }}
+
+<div class="archive-wrapper">
+  <h1 class="archive-title">Posts</h1>
+
+  {{- range $byYear }}
+  <div class="archive-year-block">
+    <h2 class="archive-year">{{ .Key }}</h2>
+
+    {{- $byMonth := .Pages.GroupByDate "January" }}
+    {{- range $byMonth }}
+    <div class="archive-month-block">
+      <h3 class="archive-month">{{ .Key }}</h3>
+      <ul class="archive-posts">
+        {{- range .Pages }}
+        <li class="archive-item">
+          <a class="archive-item-link" href="{{ .Permalink }}">{{ .Title }}</a>
+          <time class="archive-item-date" datetime="{{ .Date.Format "2006-01-02" }}">
+            {{ .Date.Format "Jan 02" }}
+          </time>
+        </li>
+        {{- end }}
+      </ul>
+    </div>
+    {{- end }}
+
+  </div>
+  {{- end }}
+</div>
+{{- end }}

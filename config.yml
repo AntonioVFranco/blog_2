@@ -1,0 +1,100 @@
+baseURL: "https://ai.antoniovfranco.com/"
+languageCode: en
+title: "Antonio V. Franco"
+theme: [hugo-website, PaperMod]
+
+enableInlineShortcodes: true
+enableRobotsTXT: true
+pagination:
+  pagerSize: 100
+
+sitemap:
+  changefreq: weekly
+  priority: 0.5
+  filename: sitemap.xml
+
+params:
+  env: production
+  author: Antonio V. Franco
+  description: "Antonio V. Franco's personal blog — thoughts on AI, engineering, and technology."
+  keywords:
+    - "AI Engineering"
+    - "RAG systems"
+    - "LLM benchmarks"
+    - "open source AI"
+    - "retrieval augmented generation"
+    - "AI research"
+    - "machine learning"
+    - "data sovereignty"
+    - "production AI systems"
+    - "AI agents"
+    - "LLM fine-tuning"
+    - "GPU infrastructure"
+    - "RunPod"
+    - "AI cost optimization"
+  DateFormat: "January 2006"
+  defaultTheme: light
+  disableThemeToggle: true
+  ShowReadingTime: true
+  ShowBreadCrumbs: false
+  ShowPostNavLinks: true
+  ShowCodeCopyButtons: true
+  ShowShareButtons: false
+  ShowAllPagesInArchive: false
+  ShowToc: true
+  TocOpen: false
+  ShowWordCount: false
+  UseHugoToc: true
+  comments: false
+  math: false
+  disableScrollToTop: false
+  disableAnchoredHeadings: false
+  disableSpecial1stPost: true
+  # Profile mode disabled — using custom homepage archive
+  profileMode:
+    enabled: false
+  socialIcons:
+    - name: GitHub
+      url: "https://github.com/AntonioVFranco"
+    - name: LinkedIn
+      url: "https://www.linkedin.com/in/antoniovfranco/"
+  assets:
+    disableScrollBarStyle: true
+  cover:
+    hiddenInList: false
+    hiddenInSingle: true
+  schema:
+    publisherType: "Person"
+    sameAs:
+      - "https://github.com/AntonioVFranco"
+      - "https://www.linkedin.com/in/antoniovfranco/"
+  analytics:
+    google:
+      SiteVerificationTag: ""
+  label:
+    text: "Antonio V. Franco"
+
+services:
+  googleAnalytics:
+    ID: ""
+
+menu:
+  main:
+    - name: Blog
+      url: /
+      weight: 1
+    - name: About
+      url: /about/
+      weight: 2
+
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
+  highlight:
+    guessSyntax: true
+    style: monokai
+  tableOfContents:
+    endLevel: 3
+    ordered: false
+    startLevel: 2

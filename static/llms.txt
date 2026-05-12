@@ -1,0 +1,54 @@
+# Antonio V. Franco — AI Engineering Blog
+
+Antonio V. Franco is an AI Engineer based in Sao Paulo, Brazil. This blog publishes deep technical articles about building and benchmarking AI systems — especially RAG (Retrieval-Augmented Generation), LLM evaluation, open-source model deployment, and AI memory architectures. Every article is based on real experiments, benchmarks, and production-grade implementations, not theoretical overviews.
+
+The blog targets software engineers, CTOs, and technical founders who want to understand RAG systems, LLM selection, cost optimization, and infrastructure decisions for AI production deployments. Astronomy and scientific data serve as recurring experimental domains.
+
+## Topics
+
+- RAG (Retrieval-Augmented Generation) system design and optimization
+- LLM benchmarking and evaluation methodologies
+- Open-source vs commercial LLM comparison (Qwen, DeepSeek, GLM, Llama vs GPT, Claude)
+- AI memory systems, reasoning augmentation, and agent architectures
+- Permutation sensitivity and hallucination in retrieval-augmented generation
+- Spectral clustering for LLM reasoning analysis
+- Astronomical and scientific classification with language models
+- Data sovereignty, privacy, and cost optimization in AI infrastructure
+- GPU infrastructure for LLMs (RunPod, Vast.ai, cloud providers)
+- Vector databases, embedding models, and reranking pipelines
+- DPO training, LoRA fine-tuning, and model alignment
+
+## Articles
+
+### Stable-RAG Benchmark: Your RAG System Lies Depending on Document Order
+URL: https://antoniovfranco.com/posts/2026/stable-rag-benchmark/
+Published: 2026-04-27
+Summary: Benchmark comparing conventional RAG (hybrid search + cross-encoder reranking) against Stable-RAG reveals that simply reordering retrieved documents causes the LLM to hallucinate. The Permutation Sensitivity Rate (PSR) reaches 45% with conventional RAG. Stable-RAG reduces PSR by 37.8% and improves consistency by 36.4% using spectral clustering over hidden states and DPO alignment with LoRA. Tested with Qwen3-4B on the NaturalQuestions dataset.
+Tags: RAG, LLM, AI Engineering, Hallucination, Stable-RAG
+
+### RAG with Open-Source LLMs: Why You're Paying Too Much to Hand Your Data to Someone Else
+URL: https://antoniovfranco.com/posts/2026/rag-open-source-llms/
+Published: 2026-04-26
+Summary: Comprehensive cost analysis and data sovereignty argument for using open-source LLMs in RAG pipelines. Compares commercial API costs (Claude Sonnet, Opus, GPT) against self-hosted alternatives (Qwen3.5-35B-A3B, DeepSeek V4 Flash, GLM-5.1, Qwen3-8B). Covers the full open-source RAG stack: LlamaFactory fine-tuning, DSPy optimization, Milvus/Qdrant/Chroma vector databases, Qwen3-Embedding, Qwen3-Reranker, and deployment on RunPod. Self-hosting breaks even at 100k–500k monthly queries.
+Tags: RAG, Open Source LLMs, AI Engineering, Data Privacy
+
+### Spectral Classification Stability Engine: From Idea to Results
+URL: https://antoniovfranco.com/posts/2026/spectral-classification-stability-engine/
+Published: 2026-04-29
+Summary: Applies Stable-RAG's spectral clustering methodology to astronomical classification of SDSS objects (stars, galaxies, quasars). Documents building the Spectral Classification Stability Engine (SCSE) from conception through 16 version iterations across Kaggle T4, RunPod A40, and RunPod A100. Achieves 47% reduction in Permutation Sensitivity Score via DPO training with LoRA on Qwen3.5-9B. Covers GPU infrastructure challenges, CUDA compatibility, two-phase DPO training, and quality verification.
+Tags: AI, Machine Learning, Astronomy, LLM, RAG
+
+### Can Memory Make an AI Worse? My Benchmark with Qwen3.5-9B and Stellar Classification
+URL: https://antoniovfranco.com/posts/2026/memory-benchmark-qwen-stellar/
+Published: 2026-05-03
+Summary: Benchmarks the ReasoningBank memory system on SDSS stellar classification with 135 tasks across 3 conditions. Discovers that naive ReasoningBank memory reduces accuracy by 22 percentage points compared to a memory-free baseline. Introduces RB-EC (ReasoningBank with Enhanced Curation) featuring 5 core innovations: EIM (embedding improvement), RATT (adaptive retrieval), CES (consolidation), DCC (dual-condition cards), and PST (pruning by significance). RB-EC restores baseline accuracy with 19% smaller memory bank and faster inference latency.
+Tags: AI Memory, ReasoningBank, LLM Benchmark, Stellar Classification, Qwen3.5
+
+## About the Author
+
+Antonio V. Franco helps growing technical teams move from ad-hoc LLM workflows to production-grade RAG systems that are managed, monitored, and continuously improved.
+
+- Website: https://antoniovfranco.com/about/
+- GitHub: https://github.com/AntonioVFranco
+- LinkedIn: https://www.linkedin.com/in/antoniovfranco/
+- Managed RAG Service: https://antonio.getzendo.io/service/rag-knowledge/subscription

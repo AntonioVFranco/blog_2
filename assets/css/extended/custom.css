@@ -1,0 +1,132 @@
+/* ============================================================
+   Homepage Archive — Monthly/Yearly Article List
+   Inspired by akitaonrails.com/en/
+   ============================================================ */
+
+/* Site logo / title */
+.top-link {
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* Site logo / title */
+.logo a {
+  font-weight: 700;
+  font-size: 1rem;
+  letter-spacing: -0.01em;
+}
+
+.archive-wrapper {
+  max-width: var(--main-width);
+  margin: 0 auto;
+  padding: var(--gap);
+}
+
+.archive-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--secondary);
+  margin-bottom: 2rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--border);
+}
+
+/* Year block */
+.archive-year-block {
+  margin-bottom: 2.5rem;
+}
+
+.archive-year {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: var(--primary);
+  margin: 0 0 1rem 0;
+  padding-bottom: 0.3rem;
+  border-bottom: 1px solid var(--tertiary);
+}
+
+/* Month block */
+.archive-month-block {
+  margin-bottom: 1.5rem;
+  padding-left: 0.5rem;
+}
+
+.archive-month {
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--secondary);
+  margin: 0 0 0.5rem 0;
+}
+
+/* Post list */
+.archive-posts {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.archive-item {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.archive-item:last-child {
+  border-bottom: none;
+}
+
+.archive-item-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-size: 0.97rem;
+  line-height: 1.4;
+  flex: 1;
+  transition: color 0.15s ease;
+}
+
+.archive-item-link:hover {
+  color: var(--darkcolor);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.archive-item-date {
+  font-size: 0.78rem;
+  font-family: monospace;
+  color: var(--secondary);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* Dark mode tweaks */
+.dark .archive-year {
+  border-color: var(--border);
+}
+
+.dark .archive-item-link:hover {
+  color: var(--lightcolor);
+}
+
+/* Remove the default list background on the homepage */
+.list .archive-wrapper {
+  background: transparent;
+}
+
+/* Mobile responsive */
+@media (max-width: 600px) {
+  .archive-item {
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .archive-item-date {
+    color: var(--gray);
+  }
+}

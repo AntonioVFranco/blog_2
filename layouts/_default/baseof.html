@@ -1,0 +1,64 @@
+{{- if lt hugo.Version "0.146.0" }}
+{{- errorf "=> hugo v0.146.0 or greater is required to build this site." }}
+{{- end -}}
+
+<!DOCTYPE html>
+{{- $theme := site.Params.defaultTheme | default "light" }}
+{{- if eq $theme "dark" }}
+<html lang="{{ site.Language }}" dir="{{ .Language.LanguageDirection | default "auto" }}" data-theme="dark">
+{{- else if eq $theme "auto" }}
+<html lang="{{ site.Language }}" dir="{{ .Language.LanguageDirection | default "auto" }}" data-theme="auto">
+{{- else }}
+<html lang="{{ site.Language }}" dir="{{ .Language.LanguageDirection | default "auto" }}" data-theme="light">
+{{- end }}
+
+<head>
+    {{- partial "head.html" . }}
+</head>
+
+<body class="
+{{- if (or (ne .Kind `page` ) (eq .Layout `archives`) (eq .Layout `search`)) -}}
+{{- print "list" -}}
+{{- end -}}
+{{- if eq site.Params.defaultTheme `dark` -}}
+{{- print " dark" }}
+{{- end -}}
+" id="top">
+    {{- /* Theme init + toggle — single script, no conflicts with theme footer */}}
+    <script>
+    (function(){
+        var html = document.documentElement;
+        var stored = localStorage.getItem("pref-theme");
+        if (stored) {
+            html.dataset.theme = stored;
+            if (stored === "dark") document.body.classList.add("dark");
+            else document.body.classList.remove("dark");
+        }
+        document.addEventListener("DOMContentLoaded", function(){
+            var btn = document.getElementById("theme-toggle");
+            if (btn) {
+                // Replace button to remove any previously attached listeners from theme partials
+                var newBtn = btn.cloneNode(true);
+                btn.parentNode.replaceChild(newBtn, btn);
+                newBtn.addEventListener("click", function(){
+                    if (html.dataset.theme === "dark") {
+                        html.dataset.theme = "light";
+                        document.body.classList.remove("dark");
+                        localStorage.setItem("pref-theme", "light");
+                    } else {
+                        html.dataset.theme = "dark";
+                        document.body.classList.add("dark");
+                        localStorage.setItem("pref-theme", "dark");
+                    }
+                });
+            }
+        });
+    })();
+    </script>
+    {{- partialCached "header.html" . .Page -}}
+    <main class="main">
+        {{- block "main" . }}{{ end }}
+    </main>
+    {{ partialCached "footer.html" . .Layout .Kind (.Param "hideFooter") (.Param "ShowCodeCopyButtons") -}}
+</body>
+</html>
