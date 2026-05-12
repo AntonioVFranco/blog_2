@@ -54,6 +54,11 @@ jobs:
           ls -la ./public/ | head -30
           echo "=== Index files ==="
           find ./public -maxdepth 1 -name "index.html"
+          # Verify index.html exists
+          if [ ! -f ./public/index.html ]; then
+            echo "ERROR: public/index.html not found!"
+            exit 1
+          fi
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
