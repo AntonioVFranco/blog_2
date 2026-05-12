@@ -61,7 +61,7 @@ jobs:
       - name: Prepare clean deploy directory
         run: |
           mkdir -p ./deploy
-          cp -r ./public/* ./deploy/
+          rsync -av ./public/ ./deploy/
           echo "=== Deploy directory contents ==="
           ls -la ./deploy
           echo "=== Deploy index.html check ==="
