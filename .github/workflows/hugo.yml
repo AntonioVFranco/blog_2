@@ -1,4 +1,3 @@
-# Sample workflow for building and deploying a Hugo site to GitHub Pages
 name: Deploy Hugo site to Pages
 
 on:
@@ -20,7 +19,7 @@ defaults:
     shell: bash
 
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
     env:
       HUGO_VERSION: 0.147.2
@@ -45,46 +44,15 @@ jobs:
           HUGO_CACHEDIR: ${{ runner.temp }}/hugo_cache
           HUGO_ENVIRONMENT: production
         run: |
-          hugo \
-            --minify \
-            --baseURL "https://ai.antoniovfranco.com/"
-          echo "=== Public directory contents ==="
+          hugo --minify --baseURL "https://ai.antoniovfranco.com/"
+          echo "Build complete. Public dir contents:"
           ls -la ./public
-          echo "=== Index files ==="
-          find ./public -maxdepth 1 -name "index.html"
-          # Verify index.html exists
-          if [ ! -f ./public/index.html ]; then
-            echo "ERROR: public/index.html not found!"
-            exit 1
-          fi
-
-      - name: Prepare clean deploy directory
-        run: |
-          rm -rf ./deploy
-          mkdir -p ./deploy
-          cp -a ./public/. ./deploy/
-          echo "=== Deploy directory contents ==="
-          ls -la ./deploy/
-          echo "=== Checking for index.html ==="
-          if [ -f ./deploy/index.html ]; then echo "SUCCESS: index.html found"; else echo "ERROR: index.html NOT found"; fi
-          echo "=== Checking for layouts (should be empty) ==="
-          ls -la ./deploy/layouts 2>/dev/null || echo "GOOD: No layouts directory"
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-pages-artifact@v3
         with:
-          name: github-pages
-          path: ./deploy/*
-          retention-days: 1
-          overwrite: true
+          path: ./public
 
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
