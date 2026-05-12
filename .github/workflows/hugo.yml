@@ -6,9 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
   group: "pages"
@@ -35,15 +33,9 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Setup Pages
-        id: pages
-        uses: actions/configure-pages@v5
-
-      - name: Clean working directory
+      - name: Clean public directory
         run: |
           rm -rf ./public ./resources ./.hugo_build_lock
-          echo "Cleaned. Current files:"
-          ls -la
 
       - name: Build with Hugo
         env:
@@ -51,27 +43,13 @@ jobs:
           HUGO_ENVIRONMENT: production
         run: |
           hugo --minify --baseURL "https://ai.antoniovfranco.com/"
-          echo "Build complete. Public dir contents:"
+          echo "Build complete."
           ls -la ./public
-          echo "=== Root level files ==="
-          ls ./public/ | head -20
-
-      - name: Verify build output
-        run: |
-          echo "Checking for index.html..."
-          if [ -f ./public/index.html ]; then
-            echo "SUCCESS: index.html exists"
-            head -c 200 ./public/index.html
-          else
-            echo "ERROR: index.html not found!"
-            exit 1
-          fi
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./public
 
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          branch: gh-pages
+          folder: ./public
+          clean: true
+          cname: ai.antoniovfranco.com
