@@ -110,7 +110,7 @@ At the bottom sits the data layer, which handles persistence and validation. Pyd
 
 ![System architecture diagram showing the four‑layer design with clear separation of concerns. The user interface layer sits on top, followed by the agent layer, then the tool layer, and finally the data layer at the base.](/images/ai-scheduler/architecture_diagram.png)
 
-*Figure 1: System architecture diagram showing the four‑layer design with clear separation of concerns.*
+<p align="center" style="font-size: 0.85em; color: #666;">(Antonio V. Franco)</p>
 
 This layered architecture has saved me countless hours of debugging. When a schedule looks wrong, I can inspect the state at each layer and see exactly where the problem originated. Was the visibility calculation incorrect? That is a tool layer or agent layer issue. Did the optimisation produce overlapping slots? That is an agent layer issue. Did a proposal fail validation? That is a data layer issue. The separation makes systematic debugging possible.
 
@@ -199,7 +199,7 @@ The quality score scales linearly with altitude from thirty degrees (quality zer
 
 ![Visibility windows for Messier 15 over a seven‑day period. The chart shows observable hours per night and quality scores. Night one shows 4.7 observable hours with quality seventy‑four. Night two shows 3.8 hours with quality fifty‑one. Night three shows 5.0 hours with quality seventy‑two.](/images/ai-scheduler/visibility_windows.png)
 
-*Figure 2: Visibility windows for Messier 15 over a seven‑day period.*
+<p align="center" style="font-size: 0.85em; color: #666;">(Antonio V. Franco)</p>
 
 I learned an important lesson while building the visibility calculator. The naive approach of checking visibility once per hour is insufficient. A target might be observable for only twenty minutes between moonrise and astronomical twilight. The scheduler now checks visibility in fifteen‑minute increments and aggregates contiguous observable blocks into windows. This finer granularity captures short but valuable observing opportunities that would otherwise be missed.
 
@@ -223,7 +223,7 @@ When the workflow reached Finalize, the schedule is complete. This state builds 
 
 ![State machine diagram showing the optimisation workflow with conditional transitions. Start leads to Initialize, then to Generate Candidates, then to Validate Constraints, which branches to Score Solutions or Check Completion, eventually leading to Refine or Finalize, and finally End.](/images/ai-scheduler/workflow_diagram.png)
 
-*Figure 3: State machine diagram showing the optimisation workflow.*
+<p align="center" style="font-size: 0.85em; color: #666;">(Antonio V. Franco)</p>
 
 I chose this state machine structure because it makes debugging tractable. When a schedule looks wrong, I can inspect the state at each step and see where things went off the rails. Was the validation state correct? Did the refinement step introduce new violations? The answers to these questions point directly to the problematic component.
 
@@ -313,11 +313,11 @@ The visualisation also includes statistics: total hours scheduled, telescope uti
 
 ![Gantt chart visualisation showing telescope time allocation across instruments and proposals. The optical camera row shows several blocks representing observations of Messier 15 and Messier 31. The spectrograph row shows blocks representing observations of the Orion Nebula.](/images/ai-scheduler/gantt_chart.png)
 
-*Figure 4: Gantt chart visualisation showing telescope time allocation.*
+<p align="center" style="font-size: 0.85em; color: #666;">(Antonio V. Franco)</p>
 
 ![Priority‑based scheduling chart showing hours allocated per proposal and time distribution. Proposal DEMO‑001 (priority 8) receives six hours, Proposal DEMO‑002 (priority 6) receives three hours, Proposal DEMO‑003 (priority 9) receives three hours.](/images/ai-scheduler/priority_chart.png)
 
-*Figure 5: Priority‑based scheduling chart showing hours allocated per proposal.*
+<p align="center" style="font-size: 0.85em; color: #666;">(Antonio V. Franco)</p>
 
 ## What the Output Looks Like
 
