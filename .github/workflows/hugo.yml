@@ -60,18 +60,21 @@ jobs:
 
       - name: Prepare clean deploy directory
         run: |
+          rm -rf ./deploy
           mkdir -p ./deploy
-          rsync -av ./public/ ./deploy/
+          cp -a ./public/. ./deploy/
           echo "=== Deploy directory contents ==="
-          ls -la ./deploy
-          echo "=== Deploy index.html check ==="
-          ls -la ./deploy/index.html
+          ls -la ./deploy/
+          echo "=== Checking for index.html ==="
+          if [ -f ./deploy/index.html ]; then echo "SUCCESS: index.html found"; else echo "ERROR: index.html NOT found"; fi
+          echo "=== Checking for layouts (should be empty) ==="
+          ls -la ./deploy/layouts 2>/dev/null || echo "GOOD: No layouts directory"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: github-pages
-          path: ./deploy
+          path: ./deploy/*
           retention-days: 1
           overwrite: true
 
